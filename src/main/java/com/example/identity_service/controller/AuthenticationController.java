@@ -2,10 +2,7 @@ package com.example.identity_service.controller;
 
 import com.example.identity_service.dto.UserResponse.AuthenticationResponse;
 import com.example.identity_service.dto.UserResponse.IntrospectResponse;
-import com.example.identity_service.dto.request.AuthenticationRequest;
-import com.example.identity_service.dto.request.ApiResponse;
-import com.example.identity_service.dto.request.IntrospectRequest;
-import com.example.identity_service.dto.request.LogoutRequest;
+import com.example.identity_service.dto.request.*;
 import com.example.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
@@ -52,6 +49,15 @@ public class AuthenticationController {
        authService.Logout(request);
 
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refresh")//verify token
+    ApiResponse<AuthenticationResponse> refresh (@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authService.refreshToken(request))
                 .build();
     }
 

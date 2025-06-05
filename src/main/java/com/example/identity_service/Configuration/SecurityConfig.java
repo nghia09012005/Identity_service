@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity // security tren cac method
 public class SecurityConfig {
 
-        private  String[] ACCESS_ENDPOINT = {"/users","/auth/log-in","/auth/introspect","/auth/logout"}; // endpoint dc access
+        private  String[] ACCESS_ENDPOINT = {"/users","/auth/log-in","/auth/introspect","/auth/logout","/auth/refresh"}; // endpoint dc access
 
 //        @Value("${jwt.SignKey}")
 //        private  String signKey;

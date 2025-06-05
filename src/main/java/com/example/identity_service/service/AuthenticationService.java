@@ -7,6 +7,7 @@ import com.example.identity_service.dto.UserResponse.IntrospectResponse;
 import com.example.identity_service.dto.request.AuthenticationRequest;
 import com.example.identity_service.dto.request.IntrospectRequest;
 import com.example.identity_service.dto.request.LogoutRequest;
+import com.example.identity_service.dto.request.RefreshRequest;
 import com.example.identity_service.entity.InvalidatedToken;
 import com.example.identity_service.entity.Role;
 import com.example.identity_service.entity.User;
@@ -106,6 +107,34 @@ public class AuthenticationService {
 
             invalidatedTokenRepository.save(invalidatedToken);
 
+
+    }
+
+    /*
+    frontend will call refresh so don't need to check expiry date of token
+    */
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var token = request.getToken();
+        // bo do invalid
+        SignedJWT signedJWT = verifiedToken(token);
+        var id = signedJWT.getJWTClaimsSet().getJWTID();
+        var expiryDate = signedJWT.getJWTClaimsSet().getExpirationTime();
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(id)
+                .expiryTime(expiryDate)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        String username = signedJWT.getJWTClaimsSet().getSubject();
+        User user = repo.findByUsername(username).orElseThrow(()->new appException(error.UNAUTHENTICATED));
+
+        var newToken = GenerateToken(user);
+
+        return AuthenticationResponse.builder()
+                .Token(newToken)
+                .isAuthen(true)
+                .build();
 
     }
 
