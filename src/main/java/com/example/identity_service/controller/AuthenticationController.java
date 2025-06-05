@@ -5,6 +5,7 @@ import com.example.identity_service.dto.UserResponse.IntrospectResponse;
 import com.example.identity_service.dto.request.AuthenticationRequest;
 import com.example.identity_service.dto.request.ApiResponse;
 import com.example.identity_service.dto.request.IntrospectRequest;
+import com.example.identity_service.dto.request.LogoutRequest;
 import com.example.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
@@ -43,4 +44,15 @@ public class AuthenticationController {
                 .code(2000)
                 .build();
     }
+
+    @PostMapping("/logout")//verify token
+    ApiResponse<Void> authenticate (@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+
+       authService.Logout(request);
+
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
 }
