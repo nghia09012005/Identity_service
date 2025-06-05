@@ -53,13 +53,21 @@ public class AuthenticationService {
     @Value("${jwt.SignKey}") // chon annotation cua spring khong phai cua lombok
     protected  String SIGN_KEY;
 
+    @NonFinal
+    @Value("${jwt.valid-duration}") // chon annotation cua spring khong phai cua lombok
+    protected  long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}") // chon annotation cua spring khong phai cua lombok
+    protected  long REFRESHABLE_DURATION;
+
     public IntrospectResponse confirm(IntrospectRequest request) throws JOSEException, ParseException {
         var Token = request.getToken();
 
         boolean isvalid = true  ;
 
         try{
-            verifiedToken(Token);
+            verifiedToken(Token,false);
         }
         catch (appException e){
             isvalid =false;
@@ -94,9 +102,13 @@ public class AuthenticationService {
     }
 
     public void Logout(LogoutRequest request) throws ParseException, JOSEException {
-        String token = request.getToken();
 
-            SignedJWT signedJWT =  verifiedToken(token);
+        try{
+            String token = request.getToken();
+
+//            Phai tinh luon duration cua refresh token de khi xuat hien exception thi van save xuong invalid token
+            SignedJWT signedJWT =  verifiedToken(token,true );
+//            neu ko xet refresh duration throw loi o day va catch o duoi ko luu vao invalid token
 
             String jti =  signedJWT.getJWTClaimsSet().getJWTID();
             Date expirydate = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -106,6 +118,12 @@ public class AuthenticationService {
                     .build();
 
             invalidatedTokenRepository.save(invalidatedToken);
+        }
+        catch(Exception e){
+            log.info("Token is invalided");
+        }
+
+
 
 
     }
@@ -116,7 +134,7 @@ public class AuthenticationService {
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var token = request.getToken();
         // bo do invalid
-        SignedJWT signedJWT = verifiedToken(token);
+        SignedJWT signedJWT = verifiedToken(token,true );
         var id = signedJWT.getJWTClaimsSet().getJWTID();
         var expiryDate = signedJWT.getJWTClaimsSet().getExpirationTime();
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
@@ -138,12 +156,18 @@ public class AuthenticationService {
 
     }
 
-    private SignedJWT verifiedToken(String token) throws JOSEException, ParseException {
+    private SignedJWT verifiedToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGN_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+//        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+//       check valid token co xet refresh duration ko hay xet valid duration
+        Date expiryTime = (isRefresh)?
+                new Date(signedJWT.getJWTClaimsSet().getIssueTime().toInstant().plus(REFRESHABLE_DURATION,ChronoUnit.SECONDS).toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
+
 
         var verified = signedJWT.verify(verifier);
 
@@ -167,7 +191,7 @@ public class AuthenticationService {
                 .issuer("NghiaTran.com") // domain cua ban
                 .issueTime(new Date()) // thoi gian tao token
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
                 )) // thoi han cua token ( gia tri hien tai + them 1 hour nua)
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope",this.BuildScope(user))

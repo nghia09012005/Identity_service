@@ -16,5 +16,11 @@ spring:
 #    jpa tu tao table trong sql chi dung khi hc spring boot
 jwt:
   SignKey: "INFljS5rAAOHIPA3tgEULE9l1f7qRw1o7Vp0DJkACPHm2sVDPqrjYBNceAqltbXS"
+  valid-duration: 20 # token het han sau 10 s
+  refreshable-duration: 120 #co the refresh trong 120 s
 
-
+# 10s dc 5 request
+resilience4j.ratelimiter.instances.apiLimit:
+  limitForPeriod: 5
+  limitRefreshPeriod: 10s
+  timeoutDuration: 0

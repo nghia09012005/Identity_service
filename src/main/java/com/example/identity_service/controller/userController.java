@@ -1,6 +1,7 @@
 package com.example.identity_service.controller;
 
 import com.example.identity_service.dto.UserResponse.ApiUserResponse;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class userController {
     }
 
     //get myInfo method
+    @RateLimiter(name = "apiLimit")
     @GetMapping("/myinfo")
     ApiResponse<ApiUserResponse> getMyinfo(){
         ApiResponse<ApiUserResponse> apires = new ApiResponse<>();

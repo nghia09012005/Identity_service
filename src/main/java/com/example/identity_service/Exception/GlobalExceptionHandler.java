@@ -1,9 +1,13 @@
 package com.example.identity_service.Exception;
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -94,5 +98,20 @@ public class GlobalExceptionHandler {
 
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
+
+//    rate limit exception
+        @ExceptionHandler(value = RequestNotPermitted.class)
+        public ResponseEntity<String> handleRateLimitException(RequestNotPermitted ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Too many request !!!!"); // lay message ra va respone
+        }
+
+        @ExceptionHandler(value = AuthenticationServiceException.class)
+        public ResponseEntity<String> TokenInvalidException(AuthenticationServiceException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Token invalid !!!!"); // lay message ra va respone
+        }
 
 }
