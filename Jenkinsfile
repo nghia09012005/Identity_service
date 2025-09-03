@@ -48,6 +48,7 @@ pipeline {
         stage('Run New Container') {
 
             steps {
+                sh 'chmod +x ./mvnw'
                 sh 'docker run -d --name $CONTAINER_NAME -p $PORT:8081 $IMAGE_NAME:latest'
             }
         }
