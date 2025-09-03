@@ -25,3 +25,4 @@ pipeline {
     }
 }
 // start ngrok before push code
+// connet webhook of github to jenkins
