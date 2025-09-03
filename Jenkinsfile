@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "identity-service"
         CONTAINER_NAME = "identity-service"
-        PORT = "8080"
+        PORT = "8081"
     }
 
     triggers {
