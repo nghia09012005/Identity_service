@@ -17,6 +17,6 @@ pipeline {
         failure { echo '❌ Build failed' }
     }
 }
-//
+// update jenkins config
 // start ngrok before push code
 // connet webhook of github to jenkins
