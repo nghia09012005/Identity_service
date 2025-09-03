@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: identity_service
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  identity-service:
+    image: openjdk:21-jdk-slim
+    container_name: identity-service
+    depends_on:
+      - mysql
+    working_dir: /app
+    volumes:
+      - ./target/identity_service-0.0.1-SNAPSHOT.jar:/app/app.jar
+    command: ["java", "-jar", "app.jar"]
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+networks:
+  mynetwork:
+    driver: bridge

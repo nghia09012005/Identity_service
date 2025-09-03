@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "`user`")
 public class User {
     @Id // mark as a main key
     @GeneratedValue(strategy = GenerationType.UUID) // generate random value for main key

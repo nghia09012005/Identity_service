@@ -3,10 +3,10 @@ server:
   port: 8080
   servlet:
     context-path: /identity
-
+#url: "jdbc:mysql://mysql:3306/identity_service"
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/identity_service"
+    url: ${SPRING_DATASOURCE_URL}
     username: root
     password: root
   jpa:

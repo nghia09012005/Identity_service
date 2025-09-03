@@ -36,10 +36,13 @@ public class ApplicationInitConfig {
         return args -> {
             if (usRepo.findByUsername("admin").isEmpty()) {
                 // Lấy role từ database
-                Role adminRole = roleRepo.findById("ADMIN")
-                        .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
-                Role userRole = roleRepo.findById("USER")
-                        .orElseThrow(() -> new RuntimeException("Role USER not found"));
+//                Role adminRole = roleRepo.findById("ADMIN")
+//                        .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+//                Role userRole = roleRepo.findById("USER")
+//                        .orElseThrow(() -> new RuntimeException("Role USER not found"));
+
+                // check tạm đang test trên máy khác
+                Role adminRole = null, userRole = null;
 
                 HashSet<Role> roles = new HashSet<>();
                 roles.add(adminRole);
