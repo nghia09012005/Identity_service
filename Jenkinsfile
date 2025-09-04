@@ -20,3 +20,4 @@ pipeline {
 // update jenkins config
 // start ngrok before push code
 // connet webhook of github to jenkins
+// test auto compile project
